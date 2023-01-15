@@ -3,23 +3,23 @@ package main
 import (
 	"ValorantGqlApi/types"
 	"encoding/json"
-	"fmt"
 	"github.com/Danny-Dasilva/CycleTLS/cycletls"
 	"log"
-	"strconv"
 	"strings"
 )
 
-func buildWeaponPageUrl(n string, t string) string {
-	return "https://tracker.gg/valorant/profile/riot/silv%230000/overview"
-	return "https://tracker.gg/valorant/profile/riot/" + n + "%23" + t + "/weapons"
-}
+const (
+	GET = "GET"
+	// POST = "POST"
+)
 
-func main() {
-	name := "silv"
-	tagline := "0000"
+func getPlayerData(name string, tagline string) types.ValData {
 
-	url := buildWeaponPageUrl(name, tagline)
+	buildTrackerPageUrl := func(n string, t string) string {
+		return "https://tracker.gg/valorant/profile/riot/silv%230000/overview"
+	}
+
+	url := buildTrackerPageUrl(name, tagline)
 
 	client := cycletls.Init()
 
@@ -35,18 +35,17 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-
-	for _, v := range data.Segments {
-		var k string = strconv.FormatFloat(float64(v.Stats.Kills.Value), 'f', -1, 32)
-		var hs string = strconv.FormatFloat(float64(v.Stats.HeadshotsPercentage.Value), 'f', -1, 32)
-		var d string = strconv.FormatFloat(float64(v.Stats.Damage.Value), 'f', -1, 32)
-
-		fmt.Println(v.Stats.PeakRank.Metadata.TierName, v.Stats.Rank.Metadata.TierName)
-		fmt.Print(" Kills=" + k + " ")
-		fmt.Print(" Damage=" + d + " ")
-		fmt.Println(" HS%=" + hs + " ")
-	}
-
+	return data
+	//for _, v := range data.Segments {
+	//	var k string = strconv.FormatFloat(float64(v.Stats.Kills.Value), 'f', -1, 32)
+	//	var hs string = strconv.FormatFloat(float64(v.Stats.HeadshotsPercentage.Value), 'f', -1, 32)
+	//	var d string = strconv.FormatFloat(float64(v.Stats.Damage.Value), 'f', -1, 32)
+	//
+	//	fmt.Println(v.Stats.PeakRank.Metadata.TierName, v.Stats.Rank.Metadata.TierName)
+	//	fmt.Print(" Kills=" + k + " ")
+	//	fmt.Print(" Damage=" + d + " ")
+	//	fmt.Println(" HS%=" + hs + " ")
+	//}
 }
 
 func responseToValData(response cycletls.Response) (data types.ValData, err error) {
